@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHREE VISHWA PHARMA CHEM | Inventory & Stock Management</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN with configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#faf6f1',
+              100: '#f4ebe0',
+              200: '#e7d5c3',
+              300: '#d4b79b',
+              400: '#bf9572',
+              500: '#a2734a',
+              600: '#825432',
+              700: '#674026',
+              800: '#53331f',
+              900: '#422818',
+              950: '#26140b',
+            },
+            slate: {
+              50: '#faf6f2',
+              100: '#f3eae1',
+              200: '#e4d5c5',
+              300: '#cbb6a2',
+              400: '#a8927e',
+              500: '#87705e',
+              600: '#675242',
+              700: '#463529',
+              800: '#2c1e15',
+              900: '#1d120c',
+              950: '#130a05',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors duration-200">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-950/40 text-amber-100 border border-brand-500/30">
+          <i data-lucide="flask-conical" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="text-base sm:text-lg font-extrabold tracking-tight bg-gradient-to-r from-amber-100 via-orange-100 to-amber-300 bg-clip-text text-transparent uppercase">
+            SHREE VISHWA PHARMA CHEM
+          </span>
+          <span class="hidden sm:inline-block text-[10px] font-semibold text-amber-300/90 ml-2 px-2 py-0.5 rounded-full bg-slate-800/90 border border-slate-700/80 uppercase tracking-wider">
+            Pharma & Chem
+          </span>
+        </div>
+      </div>
+
+      <!-- View Switcher & Actions -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        
+        <!-- Navigation View Tabs -->
+        <nav class="flex items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs sm:text-sm font-medium">
+          <button id="navPublicBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-white bg-brand-600 shadow-sm">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>Public Catalog</span>
+          </button>
+          <button id="navAdminBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-white">
+            <i data-lucide="lock" class="w-4 h-4" id="adminLockIcon"></i>
+            <span>Admin Panel</span>
+            <span id="adminActiveBadge" class="hidden ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Active</span>
+          </button>
+        </nav>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+        <!-- Admin Logout / Lock Button (Visible only when logged in) -->
+        <button id="adminLogoutBtn" title="Lock Admin Panel" class="hidden p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-colors">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: PUBLIC STOCK VIEWER                    -->
+    <!-- ============================================== -->
+    <section id="publicView" class="space-y-6">
+      
+      <!-- Public Hero / Header Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-amber-950/25 to-slate-900 border border-slate-800 p-6 sm:p-8">
+        <div class="relative z-10 max-w-2xl space-y-2">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Real-time Chemical & Pharma Stock
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white uppercase">
+            SHREE VISHWA PHARMA CHEM
+          </h1>
+          <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Live inventory catalog for Citric Acid (Mono & Anhydrous), Glycerine, Phosphoric Acid, Sodium Saccharine, Ascorbic Acid, and chemical raw materials.
+          </p>
+        </div>
+        <!-- Decorative Background Glow -->
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      </div>
+
+      <!-- Public Filters & Search Bar -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4">
+        <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input 
+              type="text" 
+              id="publicSearchInput" 
+              placeholder="Search pharma chemicals, APIs, solvents, or warehouse..." 
+              class="w-full pl-10 pr-10 py-2.5 bg-slate-950/60 border border-slate-800 rounded-xl text-sm placeholder-slate-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
+            >
+            <button id="clearPublicSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Warehouse Selector -->
+          <div class="flex items-center gap-2">
+            <select id="publicWarehouseFilter" class="bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer w-full md:w-auto">
+              <option value="ALL">All Warehouses</option>
+              <!-- Dynamic Warehouse Options populated via JS -->
+            </select>
+
+            <!-- Grid vs Table View Toggle -->
+            <div class="flex items-center bg-slate-950/60 p-1 border border-slate-800 rounded-xl">
+              <button id="publicViewTableBtn" class="p-1.5 rounded-lg text-slate-200 bg-slate-800 hover:text-white" title="Table View">
+                <i data-lucide="table" class="w-4 h-4"></i>
+              </button>
+              <button id="publicViewGridBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-white" title="Grid View">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Status Filter Chips -->
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
+          <span class="text-xs font-medium text-slate-400 mr-1 flex items-center gap-1">
+            <i data-lucide="filter" class="w-3.5 h-3.5"></i> Status:
+          </span>
+          <button data-status="ALL" class="status-chip active px-3 py-1 rounded-lg text-xs font-medium transition-all bg-brand-600 text-white">
+            All (<span id="countPublicAll">0</span>)
+          </button>
+          <button data-status="IN_STOCK" class="status-chip px-3 py-1 rounded-lg text-xs font-medium transition-all bg-slate-800/80 text-slate-300 hover:bg-slate-700 border border-slate-700/60">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>
+            In Stock (<span id="countPublicInStock">0</span>)
+          </button>
+          <button data-status="LOW_STOCK" class="status-chip px-3 py-1 rounded-lg text-xs font-medium transition-all bg-slate-800/80 text-slate-300 hover:bg-slate-700 border border-slate-700/60">
+            <span class="inline-block w-2 h-2 rounded-full bg-amber-400 mr-1"></span>
+            Low Stock (<span id="countPublicLowStock">0</span>)
+          </button>
+          <button data-status="OUT_OF_STOCK" class="status-chip px-3 py-1 rounded-lg text-xs font-medium transition-all bg-slate-800/80 text-slate-300 hover:bg-slate-700 border border-slate-700/60">
+            <span class="inline-block w-2 h-2 rounded-full bg-rose-400 mr-1"></span>
+            Out of Stock (<span id="countPublicOut">0</span>)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- PUBLIC CONTENT: Table Container -->
+      <div id="publicTableViewContainer" class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <th scope="col" class="py-3.5 px-4 sm:px-6">Chemical / Product Name</th>
+                <th scope="col" class="py-3.5 px-4">Warehouse</th>
+                <th scope="col" class="py-3.5 px-4 sm:px-6 text-center">Stock Left (kg)</th>
+              </tr>
+            </thead>
+            <tbody id="publicTableBody" class="divide-y divide-slate-800/60 text-sm">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PUBLIC CONTENT: Grid Container (Alternative View) -->
+      <div id="publicGridViewContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Populated by JavaScript -->
+      </div>
+
+      <!-- Empty State for Public View -->
+      <div id="publicEmptyState" class="hidden py-16 text-center space-y-3 bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl">
+        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+          <i data-lucide="package-search" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-base font-semibold text-slate-200">No matching items found</h3>
+        <p class="text-xs text-slate-400 max-w-sm mx-auto">
+          Try adjusting your search query, clearing filters, or switching warehouse.
+        </p>
+        <button id="resetPublicFiltersBtn" class="text-xs font-medium text-brand-400 hover:underline">
+          Reset all filters
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: SECURE ADMIN PANEL                     -->
+    <!-- ============================================== -->
+    <section id="adminView" class="hidden space-y-6">
+      
+      <!-- Admin Sub-Navigation Tabs: Stock Inventory vs Sold Products Report -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-3">
+        <div class="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-xl">
+          <button id="adminTabStockBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-brand-600 text-white shadow-sm">
+            <i data-lucide="package" class="w-4 h-4"></i>
+            <span>Inventory Stock</span>
+          </button>
+          <button id="adminTabSalesBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span>Products Sold Report</span>
+            <span id="salesBadgeCount" class="px-1.5 py-0.2 text-[10px] font-mono rounded-full bg-slate-800 text-slate-300 border border-slate-700">0</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="openRecordSaleModalBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-600/30 text-xs sm:text-sm font-semibold transition-colors">
+            <i data-lucide="badge-percent" class="w-4 h-4"></i>
+            <span>+ Record Product Sale</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TAB A: INVENTORY STOCK ================= -->
+      <div id="adminStockSection" class="space-y-6">
+
+        <!-- Top Analytics Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <!-- Metric 1: Total Items -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Unique Items</span>
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span id="metricTotalItems" class="text-2xl font-bold text-white tracking-tight">0</span>
+            <span class="text-xs text-slate-500">products listed</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+            <div><span id="metricWarehouseCount" class="font-medium text-slate-300">0</span> warehouses tracked</div>
+            <button id="metricManageWarehousesBtn" type="button" class="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 hover:underline cursor-pointer">
+              <i data-lucide="edit-3" class="w-3 h-3"></i> Edit
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric 2: Total Units in Stock -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Stock Left</span>
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+              <i data-lucide="box" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span id="metricTotalUnits" class="text-2xl font-bold text-white tracking-tight">0</span>
+            <span class="text-xs text-slate-500">kg in warehouse</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400 flex items-center gap-1">
+            <span id="metricInStockCount" class="text-emerald-400 font-medium">0</span> healthy stock lines
+          </div>
+        </div>
+
+        <!-- Metric 3: Low Stock Alert Count -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Action Needed</span>
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span id="metricLowStockAlerts" class="text-2xl font-bold text-amber-400 tracking-tight">0</span>
+            <span class="text-xs text-slate-500">alerts (≤ threshold)</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">
+            <span id="metricOutOfStockCount" class="text-rose-400 font-medium">0</span> completely out of stock
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Admin Actions Toolbar -->
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+        
+        <!-- Left: Search & Warehouse filter -->
+        <div class="flex flex-1 flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input 
+              type="text" 
+              id="adminSearchInput" 
+              placeholder="Search chemicals, products, warehouse..." 
+              class="w-full pl-10 pr-4 py-2 bg-slate-950/60 border border-slate-800 rounded-xl text-sm placeholder-slate-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+          </div>
+          <select id="adminWarehouseFilter" class="bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
+            <option value="ALL">All Warehouses</option>
+          </select>
+        </div>
+
+        <!-- Right: Operations (Add Item, Warehouses, Export CSV, Settings) -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="openAddItemModalBtn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-sm transition-all shadow-md shadow-brand-600/20">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Add New Item</span>
+          </button>
+
+          <button id="manageWarehousesBtn" class="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-amber-600/15 hover:bg-amber-600/25 text-amber-300 border border-amber-500/30 font-medium text-sm transition-all" title="Manage & Rename Warehouses">
+            <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i>
+            <span>Warehouses</span>
+          </button>
+
+          <button id="exportCsvBtn" class="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-sm transition-all" title="Export inventory report to CSV file">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export CSV</span>
+          </button>
+
+          <button id="adminSettingsBtn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors" title="Settings & Backup">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Admin Inventory Management Table -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <th scope="col" class="py-3.5 px-4 sm:px-6">Chemical / Product Name</th>
+                <th scope="col" class="py-3.5 px-4">Warehouse</th>
+                <th scope="col" class="py-3.5 px-4 text-center">Status</th>
+                <th scope="col" class="py-3.5 px-4 text-center">Stock Adjustment (kg)</th>
+                <th scope="col" class="py-3.5 px-4 sm:px-6 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody" class="divide-y divide-slate-800/60 text-sm">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Admin Table Empty State -->
+        <div id="adminEmptyState" class="hidden py-12 text-center space-y-3">
+          <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+            <i data-lucide="box" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-sm font-semibold text-slate-200">No inventory items found</h3>
+          <p class="text-xs text-slate-400">Get started by adding your first product to the inventory.</p>
+          <button id="emptyStateAddBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-medium hover:bg-brand-500">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Item
+          </button>
+        </div>
+      </div>
+
+      </div>
+
+      <!-- ================= TAB B: PRODUCTS SOLD REPORT (MONTHLY WITH 2-MONTH AUTO-PURGE) ================= -->
+      <div id="adminSalesSection" class="hidden space-y-6">
+        
+        <!-- Monthly Selection Toolbar with 2-Month Auto-Purge Notice -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5">
+          <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                  <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <label for="salesMonthSelect" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Select Month:
+                </label>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <select id="salesMonthSelect" class="px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
+                  <option value="0">January</option>
+                  <option value="1">February</option>
+                  <option value="2">March</option>
+                  <option value="3">April</option>
+                  <option value="4">May</option>
+                  <option value="5">June</option>
+                  <option value="6">July</option>
+                  <option value="7">August</option>
+                  <option value="8">September</option>
+                  <option value="9">October</option>
+                  <option value="10" selected>November</option>
+                  <option value="11">December</option>
+                </select>
+
+                <select id="salesMonthYearSelect" class="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
+                  <option value="2027">2027</option>
+                  <option value="2026" selected>2026</option>
+                  <option value="2025">2025</option>
+                </select>
+              </div>
+
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs font-medium">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                <span>Data Auto-Purged After 2 Months</span>
+              </div>
+            </div>
+
+            <!-- Export Filtered Sales to CSV -->
+            <button id="exportSalesCsvBtn" type="button" class="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs sm:text-sm font-medium transition-colors" title="Export monthly dispatches to CSV">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Export Monthly CSV</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Sales Period Summary KPIs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Total Dispatched Weight</span>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span id="salesSummaryUnits" class="text-2xl font-bold text-white tracking-tight">0</span>
+              <span class="text-xs text-slate-400">kg dispatched</span>
+            </div>
+            <span id="salesPeriodLabel" class="text-[11px] text-amber-400/90 mt-1 block">For selected month</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Dispatches Logged</span>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span id="salesSummaryOrders" class="text-2xl font-bold text-white tracking-tight">0</span>
+              <span class="text-xs text-slate-400">orders</span>
+            </div>
+            <span class="text-[11px] text-slate-500 mt-1 block">Retained in 2-month window</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-sm">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Top Dispatched Chemical</span>
+            <div class="mt-2">
+              <span id="salesSummaryTopProduct" class="text-base font-bold text-amber-300 truncate block">None</span>
+              <span id="salesSummaryTopCount" class="text-xs text-slate-400">0 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sold Products Table -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 bg-slate-950/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <th scope="col" class="py-3.5 px-4 sm:px-6">Chemical / Product</th>
+                  <th scope="col" class="py-3.5 px-4">Warehouse</th>
+                  <th scope="col" class="py-3.5 px-4 text-center">Quantity Dispatched (kg)</th>
+                  <th scope="col" class="py-3.5 px-4 sm:px-6 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody" class="divide-y divide-slate-800/60 text-sm">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State for Sales -->
+          <div id="salesEmptyState" class="hidden py-14 text-center space-y-2">
+            <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+              <i data-lucide="package" class="w-5 h-5"></i>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-200">No products sold / dispatched in this month</h4>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Select a recent month or record a new dispatch. Records older than 2 months are automatically purged.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-slate-300">SHREE VISHWA PHARMA CHEM</span>
+        <span>•</span>
+        <span>Inventory & Stock Ledger</span>
+        <span>•</span>
+        <span>Storage: <strong class="text-slate-400 font-normal">Browser LocalStorage</strong></span>
+      </div>
+      <div>
+        <span class="inline-flex items-center gap-1.5 text-xs text-slate-500">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-500/80"></i> Admin Access Protected
+        </span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================== -->
+  <!-- MODALS CONTAINER                               -->
+  <!-- ============================================== -->
+
+  <!-- 1. ADMIN PIN LOGIN MODAL -->
+  <div id="pinModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-4">
+      
+      <!-- Modal Header -->
+      <div class="text-center space-y-1.5">
+        <div class="w-12 h-12 rounded-2xl bg-brand-600/15 text-brand-400 border border-brand-500/30 flex items-center justify-center mx-auto shadow-inner">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white">Owner Security Login</h3>
+        <p class="text-xs text-slate-400">Enter your security PIN to access the Admin Panel.</p>
+      </div>
+
+      <!-- PIN Entry Form -->
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label for="pinInput" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider text-center">
+            Enter Security PIN
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="pinInput" 
+              maxlength="8" 
+              placeholder="••••••••" 
+              autocomplete="off"
+              class="w-full text-center text-xl tracking-widest py-3 px-4 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
+            >
+            <button id="togglePinVisibilityBtn" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p id="pinErrorMessage" class="hidden text-xs text-rose-400 text-center font-medium">
+            Incorrect PIN. Please try again.
+          </p>
+        </div>
+
+        <!-- Quick Keypad for PIN -->
+        <div class="grid grid-cols-3 gap-2 font-mono">
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="1">1</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="2">2</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="3">3</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="4">4</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="5">5</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="6">6</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="7">7</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="8">8</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="9">9</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/40 hover:bg-slate-700/60 text-slate-400 font-medium text-xs transition-colors" data-action="clear">Clear</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 text-white font-semibold text-base transition-colors" data-key="0">0</button>
+          <button class="keypad-btn py-2 rounded-lg bg-slate-800/40 hover:bg-slate-700/60 text-slate-400 font-medium text-xs transition-colors flex items-center justify-center" data-action="backspace">
+            <i data-lucide="delete" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 pt-1">
+          <button id="cancelPinBtn" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm transition-colors">
+            Cancel
+          </button>
+          <button id="submitPinBtn" class="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-sm transition-colors shadow-lg shadow-brand-600/30 flex items-center justify-center gap-1.5">
+            <i data-lucide="unlock" class="w-4 h-4"></i>
+            <span>Unlock</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 2. ADD / EDIT ITEM MODAL -->
+  <div id="itemModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scale-up">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/40">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center">
+            <i data-lucide="package-plus" class="w-4 h-4" id="itemModalIcon"></i>
+          </div>
+          <h3 id="itemModalTitle" class="text-base font-bold text-white">Add New Inventory Item</h3>
+        </div>
+        <button id="closeItemModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Item Form -->
+      <form id="itemForm" class="p-6 space-y-4">
+        <input type="hidden" id="itemId">
+
+        <!-- Item Name -->
+        <div>
+          <label for="itemName" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            Chemical / Product Name & Make <span class="text-rose-400">*</span>
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="itemName" 
+              list="chemicalList"
+              required
+              placeholder="e.g. Citric Acid Mono - Make: Weifang" 
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+            <datalist id="chemicalList">
+              <!-- 1) Citric Acid Mono -->
+              <option value="Citric Acid Mono - Make: Weifang"></option>
+              <option value="Citric Acid Mono - Make: Union"></option>
+              <option value="Citric Acid Mono - Make: Lemon Star"></option>
+              <option value="Citric Acid Mono - Make: MDI IP"></option>
+              <!-- 2) Citric Acid Anhydrous -->
+              <option value="Citric Acid Anhydrous - Make: Weifang"></option>
+              <option value="Citric Acid Anhydrous - Make: Union"></option>
+              <option value="Citric Acid Anhydrous - Make: RZBC"></option>
+              <option value="Citric Acid Anhydrous - Make: Lemon Star"></option>
+              <!-- 3) Glycerine -->
+              <option value="Glycerine - Make: Godrej CP"></option>
+              <option value="Glycerine - Make: VVF CP"></option>
+              <option value="Glycerine - Make: Adani CP"></option>
+              <option value="Glycerine - Make: Apical"></option>
+              <option value="Glycerine - Make: PT DUA KODA"></option>
+              <!-- 4) Phosphoric Acid -->
+              <option value="Phosphoric Acid - Make: GACL Food"></option>
+              <option value="Phosphoric Acid - Make: Green Mountain"></option>
+              <option value="Phosphoric Acid - Make: Hiforic"></option>
+              <option value="Phosphoric Acid - Make: Shine"></option>
+              <!-- 5) Sodium Saccharine -->
+              <option value="Sodium Saccharine - Make: Swati Drum"></option>
+              <option value="Sodium Saccharine - Make: Supreme IP/BR"></option>
+              <option value="Sodium Saccharine - Make: Blue Jet Non IP"></option>
+              <option value="Sodium Saccharine - Make: Thailand Powder"></option>
+              <option value="Sodium Saccharine - Make: Habai China"></option>
+              <!-- 6) Ascorbic Acid -->
+              <option value="Ascorbic Acid - Make: CSMC"></option>
+              <option value="Ascorbic Acid - Make: Shandong Luwei"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- Warehouse -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="itemWarehouse" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              Warehouse <span class="text-rose-400">*</span>
+            </label>
+            <button id="itemModalManageWhBtn" type="button" class="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 hover:underline cursor-pointer">
+              <i data-lucide="edit-3" class="w-3 h-3"></i> Manage / Rename
+            </button>
+          </div>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="itemWarehouse" 
+              list="warehouseList"
+              required
+              placeholder="Select or enter warehouse location..." 
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+            <datalist id="warehouseList">
+              <option value="Warehouse A - Acidulants & Organic Acids"></option>
+              <option value="Warehouse B - Liquid Chemicals & Polyols"></option>
+              <option value="Warehouse C - Sweeteners & Additives"></option>
+              <option value="Warehouse D - Vitamins & Active Ingredients (APIs)"></option>
+              <option value="Warehouse E - Central Storage"></option>
+              <option value="Warehouse F - Cold Storage Facility"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- Initial Quantity & Min Alert Threshold Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="itemQuantity" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              Stock Quantity (kg) <span class="text-rose-400">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="itemQuantity" 
+              min="0" 
+              step="any" 
+              required
+              placeholder="0" 
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+            >
+          </div>
+
+          <div>
+            <label for="itemMinThreshold" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              Low Stock Alert Threshold (kg) <span class="text-rose-400">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="itemMinThreshold" 
+              min="1" 
+              step="any" 
+              value="5" 
+              required
+              placeholder="5" 
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+            >
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-400">
+          Tip: Items with stock below or equal to the alert threshold will trigger the "Low Stock" warning badge.
+        </p>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" id="cancelItemFormBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors">
+            Cancel
+          </button>
+          <button type="submit" id="saveItemFormBtn" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium transition-all shadow-md shadow-brand-600/20">
+            Save Item
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 2.5 RECORD PRODUCT SALE MODAL -->
+  <div id="saleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-scale-up">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/40">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="package-minus" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Record Product Dispatch</h3>
+        </div>
+        <button id="closeSaleModalBtn" type="button" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="recordSaleForm" class="p-6 space-y-4">
+        <div>
+          <label for="saleProductSelect" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            Select Chemical / Product <span class="text-rose-400">*</span>
+          </label>
+          <select id="saleProductSelect" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer">
+            <!-- Populated via JS with items & available stock -->
+          </select>
+        </div>
+
+        <div>
+          <label for="saleQuantityInput" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            Quantity Dispatched (kg) <span class="text-rose-400">*</span>
+          </label>
+          <input type="number" id="saleQuantityInput" min="0.1" step="any" value="1" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono">
+          <span id="saleAvailableStockText" class="text-[11px] text-slate-400 mt-1 block font-mono">Available: 0 kg</span>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+          <button type="button" id="cancelSaleBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-all shadow-md shadow-amber-600/20">
+            Log Dispatch & Deduct Stock
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 3. DELETE CONFIRMATION MODAL -->
+  <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center border border-rose-500/20">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">Delete Inventory Item</h3>
+          <p class="text-xs text-slate-400">This action cannot be undone.</p>
+        </div>
+      </div>
+
+      <p class="text-sm text-slate-300">
+        Are you sure you want to permanently delete <strong id="deleteItemName" class="text-white"></strong> from your inventory?
+      </p>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button id="cancelDeleteBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors">
+          Cancel
+        </button>
+        <button id="confirmDeleteBtn" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium transition-colors shadow-lg shadow-rose-600/20">
+          Delete Item
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4. ADMIN SETTINGS & BACKUP MODAL -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-5">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="sliders" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Admin Settings</h3>
+        </div>
+        <button id="closeSettingsModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Change PIN Section -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="key" class="w-3.5 h-3.5 text-brand-400"></i> Change Security PIN
+        </h4>
+        <div class="space-y-2">
+          <input 
+            type="password" 
+            id="newPinInput" 
+            maxlength="8" 
+            placeholder="Enter new 4-8 digit PIN" 
+            class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+          <button id="saveNewPinBtn" class="w-full py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition-colors">
+            Update PIN
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Management Section -->
+      <div class="space-y-3 pt-3 border-t border-slate-800">
+        <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-emerald-400"></i> Backup & Reset
+        </h4>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <button id="exportJsonBackupBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700">
+            <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> Backup JSON
+          </button>
+          <button id="resetSampleDataBtn" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset Demo Data
+          </button>
+        </div>
+
+        <button id="clearAllDataBtn" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-colors">
+          Clear All Inventory (Fresh Start)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- MANAGE WAREHOUSES MODAL -->
+  <div id="warehouseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+            <i data-lucide="building-2" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-white">Manage & Rename Warehouses</h3>
+            <p class="text-xs text-slate-400">Add, rename, or edit storage warehouses. Renaming updates all stock & dispatch records.</p>
+          </div>
+        </div>
+        <button id="closeWarehouseModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Add New Warehouse Form -->
+      <form id="addWarehouseForm" class="py-4 border-b border-slate-800">
+        <label for="newWarehouseInput" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+          Add New Warehouse
+        </label>
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="newWarehouseInput" 
+            placeholder="e.g. Godown 3 - Chemical Depot, Bhiwandi" 
+            class="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            required
+          >
+          <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-medium text-sm rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-amber-600/20 shrink-0">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add
+          </button>
+        </div>
+      </form>
+
+      <!-- Warehouse List Header -->
+      <div class="flex items-center justify-between pt-3 pb-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          Existing Warehouses (<span id="warehouseModalCount">0</span>)
+        </span>
+        <span class="text-xs text-slate-500">Click Rename to edit inline</span>
+      </div>
+
+      <!-- Warehouse List Scrollable Container -->
+      <div id="warehouseListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 my-2 min-h-[160px] max-h-[340px]">
+        <!-- Dynamically rendered via JS -->
+      </div>
+
+      <!-- Footer -->
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
+        <button id="doneWarehouseModalBtn" type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-xl transition-colors">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none">
+    <!-- Dynamic Toasts injected via JS -->
+  </div>
+
+  <!-- APPLICATION SCRIPT -->
+  <script src="app.js"></script>
+</body>
+</html>
+
